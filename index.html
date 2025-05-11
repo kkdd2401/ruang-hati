@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ruang Hati</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #c3ecf9 0%, #fbc7aa 100%);
+      margin: 0;
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      color: #2c2c2c;
+    }
+    #app {
+      background: white;
+      max-width: 600px;
+      width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      padding: 2rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+    h1 {
+      font-weight: 600;
+      font-size: 2.4rem;
+      text-align: center;
+      color: #673ab7;
+      margin-bottom: 2rem;
+      text-shadow: 1px 1px 4px rgba(103, 58, 183, 0.3);
+      user-select: none;
+    }
+    input, textarea {
+      font-family: inherit;
+      width: 100%;
+      border-radius: 12px;
+      border: 2px solid transparent;
+      background: #f5f7fa;
+      font-size: 1.1rem;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.25rem;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+      resize: vertical;
+      min-height: 48px;
+      box-shadow: inset 2px 2px 5px #dbe7f0,
+                  inset -5px -5px 10px #ffffff;
+      outline-offset: 2px;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #673ab7;
+      box-shadow:
+        0 0 8px rgba(103,58,183,0.5),
+        inset 2px 2px 5px #bcc9e3,
+        inset -1px -1px 7px #ffffff;
+      background: #f0f0ff;
+    }
+    button {
+      background: linear-gradient(45deg, #7e57c2, #ab47bc);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1.2rem;
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0px 4px 15px rgba(171, 71, 188, 0.4);
+      user-select: none;
+    }
+    button:hover {
+      background: linear-gradient(45deg, #ab47bc, #7e57c2);
+      box-shadow: 0 6px 20px rgba(171, 71, 188, 0.7);
+      transform: scale(1.05);
+    }
+    button:active {
+      transform: scale(0.98);
+      box-shadow: 0 3px 10px rgba(171, 71, 188, 0.3);
+    }
+    .privacy {
+      font-size: 0.9rem;
+      color: #6a5d8b;
+      text-align: center;
+      margin-top: 1rem;
+      user-select: none;
+    }
+    .thanks {
+      margin-top: 2rem;
+      text-align: center;
+      font-weight: 700;
+      color: #4caf50;
+      font-size: 1.15rem;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" role="main" aria-label="Ruang Hati">
+
+    <h1>Ruang Hati</h1>
+
+    <input id="nama" type="text" placeholder="Nama Anda (opsional)" aria-label="Nama Anda (opsional)" autocomplete="off" />
+    <textarea id="curhat" rows="6" placeholder="Tulis curhatan Anda di sini..." aria-label="Form curhatan"></textarea>
+    <button id="submitBtn" type="button" aria-live="polite">Kirim</button>
+
+    <div class="privacy" aria-live="polite">
+      Curhatan Anda bersifat <strong>pribadi</strong> dan tidak dapat dibaca oleh orang lain. Hanya admin yang dapat melihatnya melalui sistem.
+    </div>
+
+    <div id="thanks" class="thanks" style="display:none;" role="alert">
+      Terima kasih, curhatan Anda sudah terkirim 💌
+    </div>
+  </div>
+
+  <script>
+    const apiBase = 'https://script.google.com/macros/s/AKfycbwP5RLcKjwgj9Bh8gYgSU-OzWVkkcknHkeKTt0JdyGKwc5ijVLheVa8oW7wGqeIHTXa/exec';
+
+    const submitBtn = document.getElementById('submitBtn');
+    const thanksEl = document.getElementById('thanks');
+    const namaEl = document.getElementById('nama');
+    const curhatEl = document.getElementById('curhat');
+
+    submitBtn.onclick = async () => {
+      const text = curhatEl.value.trim();
+      const nama = namaEl.value.trim();
+      if (!text) {
+        alert('Tolong isi curhatan Anda terlebih dahulu.');
+        curhatEl.focus();
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Mengirim...';
+
+      try {
+        await fetch(apiBase, {
+          method: 'POST',
+          body: JSON.stringify({ text, nama }),
+          headers: { 'Content-Type': 'application/json' },
+        });
+        thanksEl.style.display = 'block';
+        namaEl.value = '';
+        curhatEl.value = '';
+        setTimeout(() => (thanksEl.style.display = 'none'), 4000);
+      } catch (e) {
+        alert('Gagal mengirim curhatan. Silakan coba lagi.');
+        console.error(e);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Kirim';
+      }
+    };
+  </script>
+</body>
+</html>
